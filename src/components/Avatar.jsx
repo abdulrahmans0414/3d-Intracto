@@ -15,9 +15,10 @@ export function Avatar(props) {
     const { animation } = props;
 
     // use leva for controls
-    const { headFollow, cursorFollow } = useControls({
+    const { headFollow, cursorFollow, wireframe } = useControls({
         headFollow: false,
-        cursorFollow: false
+        cursorFollow: false,
+        wireframe: false,
 
     })
     const group = useRef()
@@ -65,6 +66,13 @@ export function Avatar(props) {
             actions[animation].reset().fadeOut(0.5).stop();
         }
     }, [animation]);
+
+    // add wireframe
+    useEffect(() => {
+        Object.values(materials).forEach((material) => {
+            material.wireframe = wireframe;
+        });
+    }, [wireframe]);
 
 
 
