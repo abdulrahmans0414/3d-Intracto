@@ -4,11 +4,16 @@ Command: npx gltfjsx@6.5.3 public/models/67fc054bed51bc585e271473.glb
 */
 
 import React, { useEffect, useRef } from 'react'
-import { useGraph } from '@react-three/fiber'
+import { useFrame, useGraph } from '@react-three/fiber'
 import { useAnimations, useFBX, useGLTF } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
+import { useControls } from 'leva'
 
 export function Avatar(props) {
+    const { headFollow } = useControls({
+        headFollow: false,
+
+    })
     const group = useRef()
     const { scene } = useGLTF('models/67fc054bed51bc585e271473.glb')
 
@@ -19,6 +24,13 @@ export function Avatar(props) {
 
     // action to animation to be play
     const { actions } = useAnimations(typingAnimation, group);
+
+    // follow for now at camara 
+    useFrame((state) => {
+        if (headFollow) {
+            group.current.getObjectByName("Head").lookAt(state.camera.position);
+        }
+    })
 
 
 
