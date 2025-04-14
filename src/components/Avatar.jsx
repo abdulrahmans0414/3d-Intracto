@@ -11,21 +11,36 @@ import { useControls } from 'leva'
 import * as Three from 'three'
 
 export function Avatar(props) {
+
+    const { animation } = props;
+
+    // use leva for controls
     const { headFollow, cursorFollow } = useControls({
         headFollow: false,
         cursorFollow: false
 
     })
     const group = useRef()
+
+    // add avatar model
     const { scene } = useGLTF('models/67fc054bed51bc585e271473.glb')
 
-    // add animations to avatar
+    // add typing animations to avatar
     const { animations: typingAnimation } = useFBX('animations/Typing.fbx')
     // console.log(typingAnimation);
     typingAnimation[0].name = 'Typing';
 
+    // add Falling animations to avatar
+    const { animations: fallingAnimation } = useFBX('animations/Falling Idle.fbx')
+    fallingAnimation[0].name = 'Falling';
+
+    // add Standing idle animations to avatar
+    const { animations: standingAnimation } = useFBX('animations/Standing Idle.fbx')
+    standingAnimation[0].name = 'Standing';
+
+
     // action to animation to be play
-    const { actions } = useAnimations(typingAnimation, group);
+    const { actions } = useAnimations([typingAnimation[0], fallingAnimation[0], standingAnimation[0]], group);
 
     // follow for now at camara  && cursor 
     useFrame((state) => {
@@ -43,8 +58,13 @@ export function Avatar(props) {
 
     // play animation using useEffect
     useEffect(() => {
-        actions['Typing'].reset().play();
-    }, []);
+        // actions['Typing'].reset().play();
+        actions[animation].reset().fadeIn(0.5).play();
+
+        return () => {
+            actions[animation].reset().fadeOut(0.5).stop();
+        }
+    }, [animation]);
 
 
 
