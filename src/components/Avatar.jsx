@@ -8,10 +8,12 @@ import { useFrame, useGraph } from '@react-three/fiber'
 import { useAnimations, useFBX, useGLTF } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useControls } from 'leva'
+import * as Three from 'three'
 
 export function Avatar(props) {
-    const { headFollow } = useControls({
+    const { headFollow, cursorFollow } = useControls({
         headFollow: false,
+        cursorFollow: false
 
     })
     const group = useRef()
@@ -25,10 +27,14 @@ export function Avatar(props) {
     // action to animation to be play
     const { actions } = useAnimations(typingAnimation, group);
 
-    // follow for now at camara 
+    // follow for now at camara  && cursor 
     useFrame((state) => {
         if (headFollow) {
             group.current.getObjectByName("Head").lookAt(state.camera.position);
+        }
+        if (cursorFollow) {
+            const target = new Three.Vector3(state.mouse.x, state.mouse.y, 0);
+            group.current.getObjectByName("Spine2").lookAt(target);
         }
     })
 
