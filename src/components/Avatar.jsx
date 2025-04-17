@@ -13,7 +13,6 @@ import * as Three from 'three'
 export function Avatar(props) {
 
     const { animation } = props;
-
     // use leva for controls
     const { headFollow, cursorFollow, wireframe } = useControls({
         headFollow: false,
@@ -28,20 +27,18 @@ export function Avatar(props) {
 
     // add typing animations to avatar
     const { animations: typingAnimation } = useFBX('animations/Typing.fbx')
-    // console.log(typingAnimation);
-    typingAnimation[0].name = 'Typing';
-
-    // add Falling animations to avatar
     const { animations: fallingAnimation } = useFBX('animations/Falling Idle.fbx')
-    fallingAnimation[0].name = 'Falling';
-
-    // add Standing idle animations to avatar
     const { animations: standingAnimation } = useFBX('animations/Standing Idle.fbx')
+
+    typingAnimation[0].name = 'Typing';
+    fallingAnimation[0].name = 'Falling';
     standingAnimation[0].name = 'Standing';
 
-
     // action to animation to be play
-    const { actions } = useAnimations([typingAnimation[0], fallingAnimation[0], standingAnimation[0]], group);
+    const { actions } = useAnimations(
+        [typingAnimation[0], fallingAnimation[0], standingAnimation[0]],
+        group
+    );
 
     // follow for now at camara  && cursor 
     useFrame((state) => {
@@ -52,20 +49,19 @@ export function Avatar(props) {
             const target = new Three.Vector3(state.mouse.x, state.mouse.y, 0);
             group.current.getObjectByName("Spine2").lookAt(target);
         }
-    })
-
-
+    });
 
 
     // play animation using useEffect
     useEffect(() => {
         // actions['Typing'].reset().play();
+        if (!actions || !actions[animation]) return;
         actions[animation].reset().fadeIn(0.5).play();
 
         return () => {
-            actions[animation].reset().fadeOut(0.5).stop();
+            actions[animation]?.fadeOut(0.5);
         }
-    }, [animation]);
+    }, [animation, actions]);
 
     // add wireframe
     useEffect(() => {
